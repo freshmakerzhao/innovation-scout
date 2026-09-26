@@ -1,6 +1,8 @@
-# 科研情报助手：基于 GPT Researcher 的快速试点
+# Innovation Scout｜科技创新情报助手
 
-更新：2026-09-24。目标是按翟老师的要求，持续发现论文和专利中的新技术、方法与团队，生成附来源的机会线索，供科技服务人员判断和跟进。
+更新：2026-09-26。目标是按翟老师的要求，持续发现论文和专利中的新技术、方法与团队，生成附来源的机会线索，供科技服务人员判断和跟进。
+
+项目仓库：[freshmakerzhao/innovation-scout](https://github.com/freshmakerzhao/innovation-scout)。本地开发目录为 `E:\WorkSpace_agent\innovation-scout`；`origin` 指向本项目，`upstream` 指向 GPT Researcher。
 
 ## 当前决定
 
