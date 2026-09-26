@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -76,27 +75,17 @@ async def probe(profile: dict) -> None:
     print(json.dumps(output, ensure_ascii=False, indent=2))
 
 
-async def research(query: str) -> None:
-    from gpt_researcher import GPTResearcher
+async def research(query: str, keywords: str | None = None) -> None:
+    from pilot_ext.abstract_research import run_abstract_research
 
-    researcher = GPTResearcher(query=query, report_type="research_report", verbose=False)
-    await researcher.conduct_research()
-    report = await researcher.write_report()
-    if not report or not report.strip():
-        raise RuntimeError("Research returned an empty report.")
-    folder = ROOT / "outputs"
-    folder.mkdir(exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-    target = folder / f"mimo-{stamp}.md"
-    target.write_text(report, encoding="utf-8")
-    print(f"Report saved: {target}")
-    print("Review source support manually. Upstream USD cost estimates are not a MiMo bill.")
+    await run_abstract_research(query, ROOT / "outputs", keywords)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["check", "probe", "embeddings", "research", "serve"])
     parser.add_argument("--query", help="Research question; English search terms help OpenAlex retrieval.")
+    parser.add_argument("--keywords", help="Optional 2-12 English search words; otherwise MiMo plans a short query.")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
     profile = configure()
@@ -127,7 +116,7 @@ def main() -> int:
         if not args.query:
             parser.error("research requires --query")
         # Elapsed-time limit only; this is NOT a monetary spend cap.
-        asyncio.run(asyncio.wait_for(research(args.query), timeout=600))
+        asyncio.run(asyncio.wait_for(research(args.query, args.keywords), timeout=600))
     elif args.command == "serve":
         import uvicorn
 

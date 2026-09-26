@@ -13,6 +13,7 @@
 
 - 2026-09-26：`app/gpt_researcher/memory/embeddings.py` 增加 `fastembed` 提供方，复用 LangChain 的 FastEmbedEmbeddings，在 CPU 上运行多语种向量模型。目的是让 MiMo 联调不依赖 OpenAI 向量 API。原有提供方分支保持原行为，文件已标明修改来源。
 - 根目录 `configs/mimo-flash.json`、`scripts/mimo.py` 和 `requirements-mimo.txt` 为本项目新增。用独立入口选择 MiMo，不改上游默认模型。
+- 2026-09-26 真实联调：新增 `app/pilot_ext/abstract_research.py`，以简短英文关键词获取 OpenAlex 真实摘要，将其作为 LangChain 文档交给上游研究与报告模块。`AbstractConductor` 仅覆盖重复联网规划步骤，保留文档上下文提取与报告生成；不绕过或关闭 URL 安全检查。增加证据不足检查、引用清单校验和模型用量记录。
 - 兼容性验证见 `tests/test_mimo_profile.py` 和 `docs/07_MiMo低成本联调.md`。更新上游时检查向量提供方注册和 LangChain 请求序列化行为。
 
 更新前先评估许可证、依赖及上游差异，使用独立分支验证后再合并；命令见[架构说明](docs/02_技术架构与数据.md)。

@@ -56,26 +56,31 @@ Copy-Item .env.example .env
 # 两次小额 MiMo 请求：JSON 结构与来源 ID、流式响应和用量
 .\.venv\Scripts\python.exe scripts/mimo.py probe
 
-# 普通研究闭环；英文检索问题方便匹配国际论文，报告按配置用中文输出
+# 论文摘要研究闭环：自动生成英文短关键词，取得真实摘要，输出中文报告
 .\.venv\Scripts\python.exe scripts/mimo.py research --query "Recent solid-state battery manufacturing challenges, with sources and evidence limitations"
 
-# 上游轻量网页，访问 http://127.0.0.1:8000
+# 可选：手动指定 2–12 个英文检索词，省去一次关键词规划调用
+.\.venv\Scripts\python.exe scripts/mimo.py research --query "硫化物固态电池有哪些制造难点？" --keywords "sulfide solid state battery manufacturing"
+
+# 上游轻量网页（尚未接入摘要扩展），访问 http://127.0.0.1:8000
 .\.venv\Scripts\python.exe scripts/mimo.py serve
 ```
 
-CLI 报告保存至根目录 `outputs/`；网页导出由上游保存至 `app/outputs/`。当前入口优先验证论文检索、阅读和报告，专利适配、每日监测、机会卡、企业需求匹配仍待开发。
+CLI 报告保存至根目录 `outputs/`，同名 JSON 保存检索词、真实摘要、来源标识、引用清单、耗时、模型返回的 token 用量及人民币费用估算。摘要不足两篇、上下文为空或出现证据清单之外的引用时，任务标记失败，不保存成功报告。链接属于证据清单不代表对应结论已经正确，仍需人工核验。
+
+当前 CLI 使用 GPT Researcher 的文档研究与报告能力分析 OpenAlex 摘要，并显式标明未读取全文。全文爬取在当前网络下遇到代理 DNS 地址被 URL 安全检查拒绝的问题；没有放开私网访问检查。网页导出仍由上游保存至 `app/outputs/`，网页暂未接入摘要扩展，不应把 CLI 的成功理解为网页研究也已验收。专利适配、每日监测、机会卡、企业需求匹配仍待开发。
 
 `scripts/mimo.py` 会明确覆盖三类模型、API 地址、检索器及向量配置，避免继承旧环境中的 GPT/Tavily 默认项。无需改动上游默认配置。直接运行原 `app/main.py` 或原 Docker Compose 不会自动启用这套方案；请使用这里的入口。
 
 ## 验证与验收
 
-2026-09-26 本机结果：Python 3.12.12 独立环境已安装，4 项离线兼容测试通过，`pip check` 通过，网页后端 `main` 导入成功。按用户要求暂不提供 Key，因此没有调用真实 MiMo API、生成真实研究报告或验收分析质量。本地向量模型尚未下载和实测推理，后续执行 `embeddings` 命令完成该项。
+2026-09-26 本机结果：Python 3.12.12 独立环境已安装，11 项测试通过，`pip check` 通过，网页后端 `main` 导入成功。用户配置 Key 后，真实 MiMo 的 JSON、来源 ID、流式响应和用量返回均通过；本地向量模型下载完成并生成 384 维向量，真实 OpenAlex 摘要研究已生成中文报告。具体结果与限制见 [首次真实联调记录](08_首次真实联调记录.md)。
 
 离线测试通过 HTTP MockTransport 检查真实 LangChain 适配器发出的地址、模型名、关闭思考参数、JSON 和流式协议，不会调用外部付费接口：
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install pytest
-.\.venv\Scripts\python.exe -m pytest tests/test_mimo_profile.py -q
+.\.venv\Scripts\python.exe -m pytest tests -q
 ```
 
 真实验证按顺序进行：密钥检查 → 两次小额接口验证 → 本地向量模型 → 一份真实论文报告。随后用 10 个固定问题评估来源可打开、结论有依据、不虚构实验条件、中文可读性、耗时和实际费用。离线通过只代表请求与响应处理兼容，不代表小米线上接口或报告质量已经验收。
