@@ -1,0 +1,31 @@
+{
+  "FAST_LLM": "openai:mimo-v2.6-flash",
+  "SMART_LLM": "openai:mimo-v2.6-flash",
+  "STRATEGIC_LLM": "openai:mimo-v2.6-flash",
+  "LLM_KWARGS": {
+    "extra_body": {"thinking": {"type": "disabled"}},
+    "use_responses_api": false,
+    "stream_usage": true,
+    "timeout": 60,
+    "max_retries": 0
+  },
+  "EMBEDDING": "fastembed:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "EMBEDDING_KWARGS": {
+    "doc_embed_type": "passage",
+    "threads": 2,
+    "batch_size": 16
+  },
+  "RETRIEVER": "openalex",
+  "LANGUAGE": "chinese",
+  "FAST_TOKEN_LIMIT": 1500,
+  "SMART_TOKEN_LIMIT": 3500,
+  "STRATEGIC_TOKEN_LIMIT": 1500,
+  "MAX_ITERATIONS": 1,
+  "MAX_SEARCH_RESULTS_PER_QUERY": 3,
+  "MAX_SUBTOPICS": 2,
+  "MAX_SCRAPER_WORKERS": 2,
+  "SCRAPER": "bs",
+  "TOTAL_WORDS": 800,
+  "IMAGE_GENERATION_ENABLED": false,
+  "MCP_STRATEGY": "disabled"
+}

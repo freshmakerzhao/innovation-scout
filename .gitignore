@@ -11,3 +11,5 @@ data/
 storage/
 logs/
 *.sqlite3
+.cache/
+outputs/

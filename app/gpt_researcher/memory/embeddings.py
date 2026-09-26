@@ -22,6 +22,7 @@ Supported providers:
     - custom: Custom OpenAI-compatible API
 """
 
+# Modified by Innovation Scout (2026-09-26): add local CPU FastEmbed support.
 import os
 from typing import Any
 
@@ -30,6 +31,7 @@ OPENAI_EMBEDDING_MODEL = os.environ.get(
 )
 
 _SUPPORTED_PROVIDERS = {
+    "fastembed",
     "openai",
     "azure_openai",
     "cohere",
@@ -86,6 +88,10 @@ class Memory:
         """
         _embeddings = None
         match embedding_provider:
+            case "fastembed":
+                from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
+
+                _embeddings = FastEmbedEmbeddings(model_name=model, **embedding_kwargs)
             case "custom":
                 from langchain_openai import OpenAIEmbeddings
 
